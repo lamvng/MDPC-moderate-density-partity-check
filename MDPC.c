@@ -390,8 +390,7 @@ void hash(int* vec)
 }
 
 
-
-void encrypt(int* c0, int* c1, int* e0, int* e1, int* h, int* M, int n)
+void encrypt(int* c0, int* c1, int* e0, int* e1, int* h, int* M, int len_m, int n)
 {
     int i, j;
     int* rot_e1h;
@@ -411,7 +410,7 @@ void encrypt(int* c0, int* c1, int* e0, int* e1, int* h, int* M, int n)
     fread(hash_conca, 256, 1, ptr);
 
     // Calculate c0 = M xor hash_conca
-    for (i=0; i<n; i++) {
+    for (i=0; i<len_m; i++) {
         c0[i] = (M[i] + hash_conca[i]) % 2;
     }
 
@@ -576,7 +575,7 @@ int bitflip(int* e0, int* e1, int* h0, int* h1, int* c1, int T, int e, int n)
 }
 
 
-int decrypt(int* M_prime, int* c0, int* c1, int* e0, int* e1, int* h0, int* h1, int T, int e, int n)
+int decrypt(int* M_prime, int len_m, int* c0, int* c1, int* e0, int* e1, int* h0, int* h1, int T, int e, int n)
 {
     int i;
     int* conca_e0e1;
@@ -607,7 +606,7 @@ int decrypt(int* M_prime, int* c0, int* c1, int* e0, int* e1, int* h0, int* h1, 
 
 
     // Calculate M_prime = c0 xor hash_conca
-    for (i=0; i<n; i++) {
+    for (i=0; i<len_m; i++) {
         M_prime[i] = (c0[i] + hash_conca[i]) % 2;
     }
 
@@ -635,7 +634,7 @@ void main()
     int flag_found = 0;
 
     // Param
-    n = 300; // Length of h0 and h1
+    n = 200; // Length of h0 and h1
     w = 39; // Weight of h0 and h1
     e = 78;
     T = 26; // Seuil pour l'algo bitflip
@@ -679,7 +678,7 @@ void main()
 
 
     // Encrypt
-    encrypt(c0, c1, e0, e1, h, M, n);
+    encrypt(c0, c1, e0, e1, h, M, len_m, n);
 
     // Print Results
     printf("\n\n\n\nParameters:\nn = %5d\nw = %5d\ne = %5d\n\n", n, w, e);
@@ -692,7 +691,7 @@ void main()
     printf("\n\n");
 
     // Decrypt
-    flag_found = decrypt(M_prime, c0, c1, e0, e1, h0, h1, T, e, n);
+    flag_found = decrypt(M_prime, len_m, c0, c1, e0, e1, h0, h1, T, e, n);
     if (flag_found == 0)
         printf("No e0 and e1 to recover.\n");
     else {
