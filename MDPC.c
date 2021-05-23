@@ -373,12 +373,12 @@ void concatenate(int* result_vec, int* vec1, int* vec2, int size)
 
 // Write array (binary represenation) into binary file --> hash --> write to output file
 // echo -n -e '\x66\x6f\x6f' | md5 > file.txt
-void hash(int* vec)
+void hash(int* vec, int size)
 {
     // Write vec to file
     FILE *write_ptr;
     write_ptr = fopen("input_hash.bin","wb");
-    fwrite(vec,sizeof(vec),1,write_ptr);
+    fwrite(vec, sizeof(int),size, write_ptr);
 
 
     // Call system to calculate hash and write to file
@@ -399,9 +399,10 @@ void encrypt(int* c0, int* c1, int* e0, int* e1, int* h, int* M, int len_m, int 
 
     // Concatenated string of e0 and e1
     conca_e0e1 = (int *) malloc(2*n * sizeof(int*));
+    concatenate(conca_e0e1, e0, e1, n);
 
     // Calculate hash of concatenated string (e0, e1)
-    hash(conca_e0e1);
+    hash(conca_e0e1, 2*n);
 
     // Read hash from file
     hash_conca = (int *) malloc(256 * sizeof(int*));
@@ -420,10 +421,10 @@ void encrypt(int* c0, int* c1, int* e0, int* e1, int* h, int* M, int len_m, int 
     for (i=0; i<n; i++) {
         c1[i] = e0[i] + rot_e1h[i];
     }
-    free(rot_e1h);
-    // free(ptr);
-    free(conca_e0e1);
-    free(hash_conca);
+    // free(rot_e1h);
+    // // free(ptr);
+    // free(conca_e0e1);
+    // free(hash_conca);
 }
 
 // Get u and v (or e1 and e2)
@@ -540,30 +541,30 @@ int bitflip(int* e0, int* e1, int* h0, int* h1, int* c1, int T, int e, int n)
 
     // If hamming(s_huv) > e
     if (getHamming(s_huv, n) > e) {
-        free(uv);
-        free(H);
-        free(synd);
-        free(sum);
-        free(roth0);
-        free(roth1);
-        free(roth0_t);
-        free(roth1_t);
-        free(h_uv);
-        free(s_huv);
+        // free(uv);
+        // free(H);
+        // free(synd);
+        // free(sum);
+        // free(roth0);
+        // free(roth1);
+        // free(roth0_t);
+        // free(roth1_t);
+        // free(h_uv);
+        // free(s_huv);
 
         return 0;
     }
     else {
-        free(uv);
-        free(H);
-        free(synd);
-        free(sum);
-        free(roth0);
-        free(roth1);
-        free(roth0_t);
-        free(roth1_t);
-        free(h_uv);
-        free(s_huv);
+        // free(uv);
+        // free(H);
+        // free(synd);
+        // free(sum);
+        // free(roth0);
+        // free(roth1);
+        // free(roth0_t);
+        // free(roth1_t);
+        // free(h_uv);
+        // free(s_huv);
         
         // Get final e0 and e1
         for(i=0; i<n; i++) {
@@ -593,9 +594,10 @@ int decrypt(int* M_prime, int len_m, int* c0, int* c1, int* e0, int* e1, int* h0
 
     // Concatenated string of recovered e0 and e1
     conca_e0e1 = (int *) malloc(2*n * sizeof(int*));
+    concatenate(conca_e0e1, e0, e1, n);
 
     // Calculate hash of concatenated string (e0, e1)
-    hash(conca_e0e1);
+    hash(conca_e0e1, 2*n);
 
 
     // Read hash from file
@@ -610,9 +612,9 @@ int decrypt(int* M_prime, int len_m, int* c0, int* c1, int* e0, int* e1, int* h0
         M_prime[i] = (c0[i] + hash_conca[i]) % 2;
     }
 
-    // free(ptr);
-    free(conca_e0e1);
-    free(hash_conca);
+    // // free(ptr);
+    // free(conca_e0e1);
+    // free(hash_conca);
 
     return 1;
 }
@@ -670,10 +672,14 @@ void main()
     for (i=0; i<n; i++)
         printf("%2d", h0[i]);
     printf("\n");
-
     printf("h1:\n");
     for (i=0; i<n; i++)
         printf("%2d", h1[i]);
+    printf("\n");
+
+    printf("Public key h:\n");
+    for (i=0; i<n; i++)
+        printf("%2d", h[i]);
     printf("\n");
 
 
@@ -681,9 +687,19 @@ void main()
     encrypt(c0, c1, e0, e1, h, M, len_m, n);
 
     // Print Results
+    printf("\n\n\n");
+    printf("c0:\n");
+    for (i=0; i<n; i++)
+        printf("%2d", c0[i]);
+    printf("\n");
+    printf("c1:\n");
+    for (i=0; i<n; i++)
+        printf("%2d", c1[i]);
+    printf("\n");
+
     printf("\n\n\n\nParameters:\nn = %5d\nw = %5d\ne = %5d\n\n", n, w, e);
 
-    printf("Message M:\n");
+    printf("Original Message M:\n");
     for (i=0; i<len_m; i++) {
         printf("%2d", M[i]);
     }
