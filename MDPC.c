@@ -667,6 +667,8 @@ void main()
     // Generate keys
     generateKeys(h, h0, h1, n, w);
 
+
+    printf("Key generation completed.\n\n");
     printf("Private keys:\n");
     printf("h0:\n");
     for (i=0; i<n; i++)
@@ -677,7 +679,7 @@ void main()
         printf("%2d", h1[i]);
     printf("\n");
 
-    printf("Public key h:\n");
+    printf("\nPublic key h:\n");
     for (i=0; i<n; i++)
         printf("%2d", h[i]);
     printf("\n");
@@ -688,6 +690,7 @@ void main()
 
     // Print Results
     printf("\n\n\n");
+    printf("Message encryption completed.\n\n");
     printf("c0:\n");
     for (i=0; i<n; i++)
         printf("%2d", c0[i]);
@@ -708,6 +711,7 @@ void main()
 
     // Decrypt
     flag_found = decrypt(M_prime, len_m, c0, c1, e0, e1, h0, h1, T, e, n);
+    printf("Message Decryption completed.\n\n");
     if (flag_found == 0)
         printf("No e0 and e1 to recover.\n");
     else {
